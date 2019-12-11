@@ -2,6 +2,13 @@
 
 #### 2019년 12월 1주차
 
-- OOP, FP, OOP vs FP
-- call-by-value, call-by-reference, 기타 다른 호출 방식(assignment, parameter)
+- OOP (객체지향 프로그래밍)
+- FP (함수형 프로그래밍)
+- OOP vs FP
+
+#### 2019년 12월 2주차
+
+- 스레드
+- 스레드의 컨텍스트 스위칭
+- 멀티스레드 프로그래밍
 
