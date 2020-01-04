@@ -21,3 +21,16 @@
 - 싱글턴 패턴
 - 템플릿 메소드 패턴
 - 옵저버 패턴
+
+---
+
+2019년 12월 4주차
+
+- [node.js 작동원리]([https://github.com/smu-kkk/study/blob/kts/node.js%20%EC%9E%91%EB%8F%99%EC%9B%90%EB%A6%AC.md](https://github.com/smu-kkk/study/blob/kts/node.js 작동원리.md))
+- [spring mvc 작동원리]([https://github.com/smu-kkk/study/blob/kts/spring%20mvc%20%EC%9E%91%EB%8F%99%EC%9B%90%EB%A6%AC.md](https://github.com/smu-kkk/study/blob/kts/spring mvc 작동원리.md))
+
+---
+
+2020년 1월 2주차
+
+- [springboot 작동원리 및 기본개념 정리]([https://github.com/smu-kkk/study/blob/kts/springboot%20%EC%9E%91%EB%8F%99%EC%9B%90%EB%A6%AC.md](https://github.com/smu-kkk/study/blob/kts/springboot 작동원리.md))
