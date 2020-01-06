@@ -357,3 +357,182 @@
   - `@WebMvcTest `
   - `@WebFluxTest `
   - `@DataJpaTest` ...
+
+
+
+#### 스프링 웹 MVC
+
+- 아무런 설정을 하지 않아도 웹 MVC 기능을 사용할 수 있는 이유
+  - Springboot application 이 시작되면서 `spring.factories`에 `WebMvcAutoConfiguration`이 설정되어 적용되었기 때문
+- `@Configuration + WebMvcConfigurer`로 기존의 MVC 기능을 이용하면서 추가적인 기능을 확장할 수 있다.
+  - converter, interceptor 등
+- `HttpMessageConverters`
+  - HTTP 요청 본문을 객체로 변경하거나, 객체를 HTTP 응답 본문으로 변경할 때 사용
+  - json 요청과 json 본문이 들어왔을 때 : json message converter를 사용
+  - `@RestController` 어노테이션이 있으면 `@ResponseBody`를 생략해도 된다.
+    - 없으면 return 값이 view name resolver로 넘어가게 된다.
+
+
+
+#### ViewResolver
+
+- 요청이 들어오면 요청에 응답을 만들수 있는 모든 View를 찾는다.
+- `accept header`랑 비교를 해서 최종적인 View를 찾고 View를 return
+- `accept header`가 없을 경우 `format=`를 통해 찾는다.
+
+
+
+#### 정적 리소스
+
+- 기본 리소스 위치
+  - classpath:/static
+  - classpath:/public
+  - classpath:/resources/
+  - classpath:/META-INF/resourcecs
+- ResourceHttpRequestHandler가 처리함.
+  - WebMvcConfigurer의 addRersourceHandlers로 커스터마이징 할 수 있음
+
+```java
+@Override
+public void addResourceHandlers(ResourceHandlerRegistry registry) {
+  registry.addResourceHandler("/m/**")
+    .addResourceLocations("classpath:/m/")
+    .setCachePeriod(20);
+```
+
+
+
+#### 웹 jar
+
+- client에서 사용하는 javascript library를 jar파일로 추가할 수 있다.
+
+- pom.xml에 의존성을 추가하고 아래 예시처럼 추가
+
+  ```html
+  <script src="/webjars/jquery/3.3.1/dist/jquery.min.js"></script>
+  ```
+
+  
+
+#### 웰컴 페이지
+
+- index.html 찾아 보고 있으면 제공.
+- index.템플릿 찾아 보고 있으면 제공.
+- 둘 다 없으면 에러 페이지.
+
+
+
+#### 템플릿 엔진
+
+- 주로 View를 만들 때 사용
+- 템플릿엔진의 템플릿 파일 위치 : `/src/main/resources/template/`
+- 스프링 부트가 자동 설정을 지원하는 템플릿 엔진
+  - FreeMarker
+  - Groovy
+  - Thymeleaf
+  - Mustache
+- JSP는 권장하지 않는다.
+  - war로 패키징을 해야한다. jar로 패키징하지 못한다.
+
+
+
+#### ExceptionHandler
+
+- 스프링 @MVC 예외 처리 방법
+
+  - `@ControllerAdvice`
+
+    - Controller 클래스 위에 어노테이션으로 설정하면 전역적으로 사용 가능
+
+  - `@ExceptionHandler`
+
+    ```java
+    @GetMapping("/hello")
+    public String hello(){
+        throw new SampleException();
+    }
+    
+    @ExceptionHandler(SampleException.class)
+    public @ResponseBody AppErr sampleError(SampleException e) {
+    	AppError appError = new AppError();
+    	...
+    	return appError
+    }
+    ```
+
+    
+
+- 스프링 부트가 제공하는 기본 예외 처리기
+
+  - BasicErrorController
+    - HTML과 JSON 응답 지원
+  - 커스터마이징 방법
+    - ErrorController 구현
+
+- 커스텀 에러 페이지
+
+  - 상태 코드 값에 따라 에러 페이지 보여주기
+    - src/main/resources/static|template/error/
+      - 404.html
+      - 5xx.html
+  - ErrorViewResolver 구현
+
+
+
+#### Spring HATEOAS
+
+- 서버: 현재 리소스와 **연관된 링크 정보**를 클라이언트에게 제공한다.
+
+- 클라이언트: **연관된 링크 정보**를 바탕으로 리소스에 접근한다.
+
+- 연관된 링크 정보
+
+  - **Rel**ation
+  - **H**ypertext **Ref**erence
+
+- 응답 객체의 리소스와 링크까지 담아서 return
+
+  ```java
+  Resource<{Class}> resource = new Resource<>({class instance})
+  resource.add(linkTo(methodOn({Controller.class}).{Controller method()}).withSelfRel());
+  return resource;
+  ```
+
+
+
+#### CORS
+
+- SOP를 우회하기 위한 표준 기술
+
+  - SOP : 같은 origin에만 요청을 보낼 수 있다.
+  - 기본적으로 SOP가 적용
+
+- origin
+
+  - URI 스키마 (http, https)
+  - hostname (whiteship.me, localhost)
+  - 포트 (8080, 18080)
+
+- 스프링 MVC `@CrossOrigin`
+
+  - `@Controller`나 `@RequestMapping`에 추가하거나
+
+    ```javascript
+    @CrossOrigin(origin = "httlp://localhost:18080")
+    ```
+
+  - `WebMvcConfigurer` 사용해서 글로벌 설정
+
+    ```java
+    @Configuration
+    public class WebConfig implements WebMvcConfigurer {
+    	@Override
+    	public void addCorsMappings(CorsRegistry registry){
+    		registry.addMapping("/**")
+    			.allowedOrigins("http://localhost:18080");
+    	}
+    }
+    ```
+
+
+
